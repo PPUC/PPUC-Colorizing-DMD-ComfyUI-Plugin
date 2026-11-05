@@ -1,6 +1,6 @@
 # ColorizingDMD ComfyUI Workflows
 
-A plugin for the [ColorizingDMD](https://github.com/PPUC/ColorizingDMD) editor. It runs
+A plugin for the [PPUC Colorizing DMD](https://github.com/PPUC/PPUC-Colorizing-DMD) editor. It runs
 colorized SD pictures (128x32) through a [ComfyUI](https://github.com/comfyanonymous/ComfyUI)
 workflow and proposes the results for the HD plane (256x64). It works on frames, backgrounds
 and sprites.
@@ -12,7 +12,48 @@ and the plugin talks to its HTTP API.
 The plugin brings each result back to the HD plane's size and to RGB565 exactly, then proposes
 it in the editor's review window. One Undo takes back what was applied.
 
-Needs the editor with editor API version 3.
+Needs PPUC Colorizing DMD 3.99.30 or later (editor API version 3).
+
+## Install
+
+The plugin goes into the editor's folder for the plugins you install; ComfyUI runs on this or
+another computer, see "The workflow" below.
+
+1. Download the plugin for your editor from the
+   [releases](https://github.com/PPUC/PPUC-Colorizing-DMD-ComfyUI-Plugin/releases), under
+   `Assets`:
+
+   | Editor package           | Plugin package                                        |
+   | ------------------------ | ----------------------------------------------------- |
+   | Windows                  | `PPUC-Colorizing-DMD-ComfyUI-Plugin-windows-x86_64-…` |
+   | Linux x86_64 (AppImage)  | `PPUC-Colorizing-DMD-ComfyUI-Plugin-linux-x86_64-…`   |
+   | Linux aarch64 (AppImage) | `PPUC-Colorizing-DMD-ComfyUI-Plugin-linux-aarch64-…`  |
+   | macOS (Apple silicon)    | `PPUC-Colorizing-DMD-ComfyUI-Plugin-macos-arm64-…`    |
+
+   The zip holds one folder, `ComfyUI`, with the example workflows in `examples`. Builds of
+   every commit are under the repository's `Actions` tab, for testing; they need a GitHub login
+   to download.
+2. Put the folder `ComfyUI` into the editor's folder for the plugins you install.
+   `Settings -> Plugins` names it, and `Open Folder` opens it:
+   - Windows: `%APPDATA%\ppuc.org\PPUC Colorizing DMD\plugins`
+   - macOS: `~/Library/Application Support/ppuc.org/PPUC Colorizing DMD/plugins`
+   - Linux: `~/.local/share/ppuc.org/PPUC Colorizing DMD/plugins`
+
+   The folder `ComfyUI`, with `plugin.cfg` in it, must lie directly in `plugins`. On macOS,
+   remove the mark macOS puts on downloaded files, or the library does not load; in the
+   Terminal:
+
+       xattr -dr com.apple.quarantine ~/Library/Application\ Support/ppuc.org/PPUC\ Colorizing\ DMD/plugins/ComfyUI
+
+3. Restart the editor and check `ComfyUI Workflows` under `Settings -> Plugins`. The `Plugins`
+   menu then has the ComfyUI entries; see "Use" below. A plugin that does not load is named
+   there with the reason, and `Help -> Plugin Log` has the details.
+
+To update the plugin, replace the `ComfyUI` folder with the new one; the settings are kept.
+
+For the `ColorizingDMD Load Clip` node, download `PPUC-Colorizing-DMD-ComfyUI-Node-…` from the
+same release on the computer that runs ComfyUI, and put its folder `colorizingdmd` into
+ComfyUI's `custom_nodes` (see "The ColorizingDMD Load Clip node").
 
 ## Parts
 
@@ -45,12 +86,21 @@ Needs the editor with editor API version 3.
     ctest --test-dir build --output-on-failure
 
 The build puts the plugin's folder in `build/ComfyUI`: `plugin.cfg` and the library. With
-`COLORIZINGDMD_PLUGIN_DIR` set, the build also copies the folder into a development editor's
-plugin folder.
+`COLORIZINGDMD_PLUGIN_DIR` set, it is also copied into that folder, for example a development
+editor's plugin folder or the folder for the plugins you install (see "Install").
 
-For a packaged editor, copy `ComfyUI` into its plugin folder:
-- Windows and Linux: `plugins` beside the program.
-- macOS: `ColorizingDMD.app/Contents/PlugIns/vpx`.
+CI (`.github/workflows/build.yml`) builds and tests the plugin for each editor package's
+platform with warnings as errors, against the editor API and the VPX plugin SDK at the commits
+it pins (`COLORIZINGDMD_SHA`, `VPINBALL_SHA`). Every run uploads the plugin packages and the
+ComfyUI node as the run's artifacts.
+
+## Release
+
+1. Raise the version in `CMakeLists.txt` (`project(... VERSION x.y.z)`) and in `plugin.cfg`
+   (`version`), in one commit.
+2. Tag it `vx.y.z` and push the tag. CI checks the tag against both versions and collects the
+   packages into a draft release.
+3. Write the release notes on GitHub and publish the draft.
 
 ## The workflow
 
