@@ -1,0 +1,17 @@
+{
+  "1": {
+    "class_type": "LoadImage",
+    "inputs": {"image": "example.png"},
+    "_meta": {"title": "CDMD Input"}
+  },
+  "2": {
+    "class_type": "ImageScaleBy",
+    "inputs": {"image": ["1", 0], "upscale_method": "nearest-exact", "scale_by": 4.0},
+    "_meta": {"title": "Upscale Image By"}
+  },
+  "3": {
+    "class_type": "SaveImage",
+    "inputs": {"images": ["2", 0], "filename_prefix": "colorizingdmd/result"},
+    "_meta": {"title": "CDMD Output"}
+  }
+}
